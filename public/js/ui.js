@@ -108,9 +108,11 @@ const UI = (() => {
 
   function getTagIcon(tagClass) {
     const icons = {
-      'tag-direct': '🎯',
-      'tag-creative': '✨',
-      'tag-bold': '🔥'
+      'tag-direct': '💪',
+      'tag-creative': '😏',
+      'tag-bold': '🔥',
+      'tag-funny': '😂',
+      'tag-mystery': '🌙'
     };
     return icons[tagClass] || '💬';
   }

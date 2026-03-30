@@ -7,42 +7,55 @@ const GroqClient = (() => {
   const API_URL = '/api/generate';  // Backend proxy endpoint
   const MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
-  const SYSTEM_PROMPT = `Você é o DesenrolaAI, um assistente brasileiro especializado em comunicação interpessoal e paquera.
+  const SYSTEM_PROMPT = `Você é o DesenrolaAI, um assistente brasileiro especializado em comunicação interpessoal, paquera e conquista.
 
-Sua missão é ajudar o usuário a responder stories do Instagram, mensagens no WhatsApp ou iniciar conversas de forma natural, interessante e envolvente.
+Sua missão é criar respostas para comentar em fotos, stories ou conversas com mulheres, com uma vibe confiante, envolvente e levemente ousada.
 
 Você analisa o contexto visual (prints de stories/conversas) e textual para gerar respostas que:
-- Soem naturais e autênticas, como se o próprio usuário tivesse escrito
-- Despertem interesse e mantenham a conversa fluindo
-- Sejam adaptadas ao contexto e tom desejado pelo usuário
-- Usem linguagem jovem brasileira quando apropriado (gírias leves, emojis)
+- Transmitam interesse REAL, atitude de quem chega pra conquistar, sem parecer carente ou exagerado
+- Tenham tom natural, masculino e direto, com um toque de flerte e mistério
+- Gerem CURIOSIDADE, CONEXÃO e abram espaço pra conversa continuar
+- Soem autênticas, como se o cara tivesse mandado de verdade — nada robotizado
+- Usem linguagem jovem brasileira quando caber (gírias leves, emojis estratégicos)
 
-REGRAS OBRIGATÓRIAS:
-1. Sempre respeite limites éticos - NUNCA sugira mensagens ofensivas, invasivas, assediadoras ou desrespeitosas
-2. Não crie mensagens que possam ser consideradas stalking ou pressão
-3. Respeite sinais de desinteresse - se o contexto mostrar desinteresse, sugira recuar educadamente
-4. Adapte o tom conforme solicitado (humor, interesse, casual, romântico, misterioso, confiante)
-5. Considere o contexto emocional e cultural da conversa
+REGRAS DE QUALIDADE:
+1. NUNCA use elogios genéricos como "linda", "perfeita", "maravilhosa", "gata" — isso é preguiçoso e não gera interesse
+2. Prefira comentários que PROVOQUEM uma reação, despertem curiosidade ou façam ela querer responder
+3. Seja específico sobre o que está na foto/story — mostre que você REALMENTE prestou atenção
+4. Frases curtas e impactantes funcionam melhor que textos longos
+5. Emojis com moderação — 1 no máximo, e só quando acrescentar algo
 6. Use português brasileiro natural e contemporâneo
-7. Nunca invente informações sobre a outra pessoa - baseie-se apenas no que está visível
+7. Nunca invente informações — baseie-se apenas no que está visível
+
+REGRAS ÉTICAS:
+1. NUNCA sugira mensagens ofensivas, invasivas, assediadoras ou desrespeitosas
+2. Não crie mensagens que possam ser consideradas stalking ou pressão
+3. Respeite sinais de desinteresse — se o contexto mostrar desinteresse, sugira recuar com classe
+4. Nada de objetificação — o flerte deve ser inteligente, não vulgar
 
 FORMATO DE RESPOSTA:
-Sempre forneça exatamente 3 sugestões de resposta, cada uma com uma abordagem diferente.
+Sempre forneça exatamente 5 sugestões de resposta, cada uma com um estilo diferente.
 Use o seguinte formato EXATO (isso é crucial para o parsing):
 
-[SUGESTÃO 1 - DIRETA]
-{sua sugestão aqui}
+[SUGESTÃO 1 - CONFIANTE]
+{resposta direta e confiante, de quem sabe o que quer}
 
-[SUGESTÃO 2 - CRIATIVA]
-{sua sugestão aqui}
+[SUGESTÃO 2 - PROVOCATIVA]
+{provocação leve e divertida que gera reação}
 
-[SUGESTÃO 3 - OUSADA]
-{sua sugestão aqui}
+[SUGESTÃO 3 - ENVOLVENTE]
+{charmosa e envolvente, cria conexão emocional}
 
-Após as 3 sugestões, adicione uma breve dica de 1-2 linhas sobre o contexto:
+[SUGESTÃO 4 - ENGRAÇADA]
+{humor com atitude, faz rir sem perder a pose}
+
+[SUGESTÃO 5 - MISTERIOSA]
+{intrigante e misteriosa, desperta curiosidade}
+
+Após as 5 sugestões, adicione uma breve dica de 1-2 linhas sobre o contexto:
 
 [DICA]
-{dica contextual sobre timing, abordagem, etc.}`;
+{dica tática sobre timing, abordagem, quando mandar, etc.}`;
 
   /**
    * Generates responses based on image and prompt
@@ -175,11 +188,11 @@ ${styleContext}`;
    */
   function getMaxTokens(length) {
     const tokens = {
-      'curta': 400,
-      'media': 700,
-      'longa': 1000
+      'curta': 600,
+      'media': 1000,
+      'longa': 1400
     };
-    return tokens[length] || 700;
+    return tokens[length] || 1000;
   }
 
   /**
@@ -188,8 +201,8 @@ ${styleContext}`;
    */
   function parseResponses(content) {
     const suggestions = [];
-    const tags = ['DIRETA', 'CRIATIVA', 'OUSADA'];
-    const tagClasses = ['tag-direct', 'tag-creative', 'tag-bold'];
+    const tags = ['CONFIANTE', 'PROVOCATIVA', 'ENVOLVENTE', 'ENGRAÇADA', 'MISTERIOSA'];
+    const tagClasses = ['tag-direct', 'tag-creative', 'tag-bold', 'tag-funny', 'tag-mystery'];
 
     // Extract tip first (to remove from content for cleaner parsing)
     let tip = '';
@@ -208,7 +221,7 @@ ${styleContext}`;
     }
 
     // Strategy 1: Match [SUGESTÃO X - LABEL] with flexible spacing/brackets
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 5; i++) {
       const patterns = [
         new RegExp(`\\[\\s*SUGEST[ÃA]O\\s*${i + 1}[^\\]]*\\]\\s*\\n([\\s\\S]*?)(?=\\[\\s*SUGEST[ÃA]O\\s*${i + 2}|\\[\\s*DICA|$)`, 'i'),
         new RegExp(`\\*\\*\\s*SUGEST[ÃA]O\\s*${i + 1}[^*]*\\*\\*\\s*\\n([\\s\\S]*?)(?=\\*\\*\\s*SUGEST[ÃA]O\\s*${i + 2}|\\*\\*\\s*DICA|$)`, 'i'),
@@ -234,7 +247,7 @@ ${styleContext}`;
       const numberedRegex = /(?:^|\n)\s*(?:\*\*)?(\d+)[.\)]\s*(?:\*\*)?\s*(?:[-–—]\s*)?(?:DIRETA|CRIATIVA|OUSADA|[^:\n]{0,20})?[:\-]?\s*\n?([\s\S]*?)(?=(?:\n\s*(?:\*\*)?\d+[.\)])|$)/gi;
       let match;
       let idx = 0;
-      while ((match = numberedRegex.exec(content)) !== null && idx < 3) {
+      while ((match = numberedRegex.exec(content)) !== null && idx < 5) {
         const text = match[2].trim().replace(/^[""]|[""]$/g, '').trim();
         if (text && text.length > 5) {
           suggestions.push({ tag: tags[idx], tagClass: tagClasses[idx], text });
@@ -251,7 +264,7 @@ ${styleContext}`;
         return cleaned.length > 15;
       });
 
-      for (let i = 0; i < Math.min(3, blocks.length); i++) {
+      for (let i = 0; i < Math.min(5, blocks.length); i++) {
         let text = blocks[i]
           .replace(/^\s*[\[\(]?\s*SUGEST[ÃA]O\s*\d+[^\]\)]*[\]\)]?\s*/i, '')
           .replace(/^\s*\*\*[^*]+\*\*\s*/i, '')
