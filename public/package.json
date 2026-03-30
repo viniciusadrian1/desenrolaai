@@ -1,0 +1,14 @@
+{
+  "name": "desenrolaai",
+  "version": "1.0.0",
+  "description": "DesenrolaAI - Assistente de respostas inteligentes com IA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "dotenv": "^16.4.5"
+  }
+}
